@@ -1,0 +1,42 @@
+name: build-and-release
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+    branches: [master]
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+
+      - name: Vet
+        run: make vet
+
+      - name: Build all platforms
+        run: make dist VERSION=v0.1.${{ github.run_number }}
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ola-dist
+          path: dist/
+
+      - name: Publish release
+        if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: v0.1.${{ github.run_number }}
+        run: |
+          gh release create "$TAG" dist/* \
+            --target "$GITHUB_SHA" \
+            --title "ola $TAG" \
+            --generate-notes
