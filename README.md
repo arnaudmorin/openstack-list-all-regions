@@ -52,6 +52,7 @@ Install somewhere else with `make install GOBIN=/usr/local/bin`.
 ```sh
 ola            # list servers with their IPv4 addresses
 ola --ipv6     # also show IPv6 addresses
+ola --list-regions  # only print the compute regions found in the catalog
 ola --debug    # show discovered regions, per-region progress and HTTP traffic on stderr
 ```
 

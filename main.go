@@ -36,6 +36,7 @@ type row struct {
 func main() {
 	ipv6 := flag.Bool("ipv6", false, "also show IPv6 addresses")
 	debug := flag.Bool("debug", false, "log HTTP requests and responses to stderr")
+	listRegions := flag.Bool("list-regions", false, "print the compute regions and exit")
 	showVersion := flag.Bool("version", false, "print version and exit")
 	flag.Parse()
 	if *showVersion {
@@ -61,6 +62,12 @@ func main() {
 	regions, err := computeRegions(provider)
 	if err != nil {
 		log.Fatalf("cannot read service catalog: %v", err)
+	}
+	if *listRegions {
+		for _, r := range regions {
+			fmt.Println(r)
+		}
+		return
 	}
 	if *debug {
 		fmt.Fprintf(os.Stderr, "Regions found in service catalog: %v\n", regions)
